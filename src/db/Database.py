@@ -1,7 +1,5 @@
 from sqlite3 import connect
 
-from streamlit import connection
-
 
 class Database:
     def __init__(self, db_name):
@@ -21,6 +19,8 @@ class Database:
                     updated_at DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
+            # alter table add index
+
     def insert(self, query, params):
         try:
             with self.connection:
@@ -66,20 +66,18 @@ class Database:
         except Exception as err:
             print(f"Something happend while deleting data: {err}")
 
-    def delete_single_record(self, table_name='expenses', record_id=None):
-        record_id = int(record_id)
-        try:
-            with self.connection:
-                cursor = self.connection.execute(f"DELETE FROM {table_name} WHERE id = ?", (record_id,))
-                if cursor.rowcount > 0:
-                    print("Data deleted successfully.")
-                else:
-                    print("No data found to delete.")
+    def delete_single_record(self, id:int, table_name='expenses'):
+        # try:
+        with self.connection:
+            cursor = self.connection.execute(f"DELETE FROM {table_name} WHERE id = ?", (id,))
+            if cursor.rowcount > 0:
+                print("Data deleted successfully.")
+            else:
+                print("No data found to delete.")
 
-        except Exception as err:
-            print(f"Something happend while deleting data: {err}")
-        except Exception as err:
-            print(f"Something happend while deleting data: {err}")
+        # except Exception as err:
+        #     print(f"Something happend while deleting data: {err}")
+        #     return False
 
     def update(self, id:int, table_name:str, item_price: float, item_name:str, item_amount: int):
         with self.connection:
