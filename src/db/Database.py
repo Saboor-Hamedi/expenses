@@ -45,11 +45,16 @@ class Database:
                 cursor = self.connection.execute(f"SELECT * FROM {table_name}")
                 return cursor.fetchall()
 
-
-
         except Exception as err:
             print(f"Something happend while fetching data: {err}")
             return[]
+
+    def fetch_single(self, id:int, table_name):
+        with self.connection:
+            cursor = self.connection.execute(f'SELECT * FROM {table_name} WHERE id = ?', (id,))
+            return cursor.fetchone()
+
+
     def delete_all(self, table_name='expenses'):
         try:
             with self.connection:
@@ -78,20 +83,24 @@ class Database:
 
     def update(self, id:int, table_name:str, item_price: float, item_name:str, item_amount: int):
         with self.connection:
-            query = f"""
-                UPDATE {table_name}
-                SET item_price= :item_price,
-                item_name= :item_name,
-                item_amount= :item_amount,
-                updated_at = CURRENT_TIMESTAMP
-                WHERE id = :id
-            """
-            data = {
-                "id": id,
-                "item_price": item_price,
-                "item_name": item_name,
-                "item_amount": item_amount,
-            }
+            set_clauses =[]
+            data = {"id":id}
+
+            # We check her if any column is updated or not
+            if item_price is not None:
+                set_clauses.append("item_price = :item_price")
+                data['item_price'] = item_price
+            if item_name is not None:
+                set_clauses.append("item_name = :item_name")
+                data['item_name'] = item_name
+            if item_amount is not None:
+                set_clauses.append("item_amount = :item_amount")
+                data['item_amount'] = item_amount
+            set_clause= ', ' .join(set_clauses)
+
+            query = f"UPDATE {table_name} SET {set_clause}, updated_at = CURRENT_TIMESTAMP WHERE id = :id"
+
+
             cursor = self.connection.execute(query,data)
             if cursor.rowcount > 0:
                 print('Expenses updated successfully. ')
@@ -106,5 +115,6 @@ class Database:
         with self.connection:
             cursor = self.connection.execute(f'SELECT SUM(item_price * item_amount) FROM {table_name}')
             return cursor.fetchone()[0] or 0
+
 
 

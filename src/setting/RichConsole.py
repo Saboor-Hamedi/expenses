@@ -20,8 +20,8 @@ class RichConsole:
             created_at = dt.datetime.fromisoformat(expense[4]).strftime('%Y-%m-%d ') if expenses else 'N/A'
             table.add_row(
                 str(expense[0]),
-                f"{expense[1]:.2f}",
-                expense[2],
+                f"{expense[1]}",
+                str(expense[2]),
                 str(expense[3]),
                 created_at
             )

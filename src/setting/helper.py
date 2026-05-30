@@ -1,6 +1,5 @@
 
 import sys
-from curses.ascii import isdigit
 
 
 def check_valid_price(price):
@@ -10,7 +9,7 @@ def check_valid_price(price):
         if price is None:
             print('Price cannot be None.')
             return False
-        elif not isinstance(price, (int, float)):
+        elif not isinstance(price):
             print(f'Invalid price: {price} price must be a number.')
             return False
         elif price <= 0:
@@ -98,8 +97,8 @@ def back_to_menu(back: str):
 
 
 def quit(choice):
-    quit_lists ={'q','quit','bye','exit'}
-    if choice in quit_lists:
+    quit_lists = ['quit','bye','exit','q']
+    if choice.lower() in quit_lists:
         print("Exiting the program. Goodbye!")
         sys.exit(0)
 
